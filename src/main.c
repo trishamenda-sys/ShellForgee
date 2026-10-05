@@ -7,6 +7,8 @@ int main(void) {
     size_t len = 0;
     ssize_t nread;
 
+    char *args[64];
+
     while (1) {
         printf("shellforge$ ");
         fflush(stdout);
@@ -14,7 +16,6 @@ int main(void) {
         nread = getline(&line, &len, stdin);
 
         if (nread == -1) {
-            printf("\nExiting cleanly...\n");
             break;
         }
 
@@ -22,18 +23,36 @@ int main(void) {
             line[nread - 1] = '\0';
         }
 
-        if (strcmp(line, "exit") == 0) {
-            printf("Exiting cleanly...\n");
+        int i = 0;
+
+        char *token = strtok(line, " \t");
+
+        while (token != NULL && i < 63) {
+            args[i] = token;
+            i++;
+            token = strtok(NULL, " \t");
+        }
+
+        args[i] = NULL;
+
+        if (i == 0) {
+            continue;
+        }
+
+        if (strcmp(args[0], "exit") == 0) {
             break;
         }
 
-        if (strlen(line) > 0) {
-            printf("You typed: %s\n", line);
+        printf("\nCommand and arguments:\n");
+
+        for (int j = 0; j < i; j++) {
+            printf("arg[%d]- %s\n", j, args[j]);
         }
+
+        printf("\n");
     }
 
     free(line);
 
     return 0;
 }
-
